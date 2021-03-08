@@ -9,13 +9,9 @@ import lombok.ToString;
 @Getter
 @ToString
 @EqualsAndHashCode
-public final class Multiplication {
+public final class MultiplicationResultAttempt {
 
-    private final int factorA;
-    private final int factorB;
-
-    public Multiplication() {
-        this(0,0);
-    }
-
+    private final User user;
+    private final Multiplication multiplication;
+    private final int resultAttempt;
 }
