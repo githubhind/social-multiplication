@@ -1,9 +1,6 @@
 package com.test.microservices.multiplication.domain;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @RequiredArgsConstructor
 @Getter
@@ -13,4 +10,7 @@ public final class User {
 
     private final String alias;
 
+    public User() {
+        this.alias = null;
+    }
 }
