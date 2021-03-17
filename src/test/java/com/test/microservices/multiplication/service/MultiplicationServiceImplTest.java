@@ -25,7 +25,7 @@ public class MultiplicationServiceImplTest {
     }
 
     @Test
-    public void checkCorrectAttemptTest() {
+    public void createMultiplicationTest() {
         //given
         given(randomGeneratorService.generateRandomFactor()).willReturn(50, 30);
 
@@ -35,11 +35,10 @@ public class MultiplicationServiceImplTest {
         //then
         assertThat(multiplication.getFactorA()).isEqualTo(50);
         assertThat(multiplication.getFactorB()).isEqualTo(30);
-        //assertThat(multiplication.getResult()).isEqualTo(1500);
     }
 
     @Test
-    public void checkAttemptWhenResultCorrectTest() {
+    public void checkCorrectAttemptTest() {
         //given
         User user = new User("john_doe");
         Multiplication multiplication = new Multiplication(50, 60);
