@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -57,7 +58,7 @@ public class MultiplicationResultAttemptControllerTest {
         User user = new User("John");
         Multiplication multiplication = new Multiplication(10, 20);
         MultiplicationResultAttempt multiplicationResultAttempt = new MultiplicationResultAttempt(user, multiplication, 200);
-        given(multiplicationService.checkAttempt(BDDMockito.any(MultiplicationResultAttempt.class))).willReturn(correct);
+        given(multiplicationService.checkAttempt(any(MultiplicationResultAttempt.class))).willReturn(correct);
 
         //when
         MockHttpServletResponse response = mvc.perform(post("/results").contentType(MediaType.APPLICATION_JSON).content(jsonMultiplicationResultAttempt.write(multiplicationResultAttempt).getJson())).andReturn().getResponse();
