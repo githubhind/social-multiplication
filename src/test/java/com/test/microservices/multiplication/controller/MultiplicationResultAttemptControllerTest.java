@@ -2,15 +2,12 @@ package com.test.microservices.multiplication.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.microservices.multiplication.controler.MultiplicationResultAttemptController;
-import com.test.microservices.multiplication.controler.MultiplicationResultAttemptController.ResultResponse;
 import com.test.microservices.multiplication.domain.Multiplication;
 import com.test.microservices.multiplication.domain.MultiplicationResultAttempt;
 import com.test.microservices.multiplication.domain.User;
 import com.test.microservices.multiplication.service.MultiplicationService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.json.JacksonTester;
@@ -19,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,7 +32,6 @@ public class MultiplicationResultAttemptControllerTest {
     private MockMvc mvc;
 
     private JacksonTester<MultiplicationResultAttempt> jsonMultiplicationResultAttempt;
-    private JacksonTester<ResultResponse> jsonResultResponse;
 
     @BeforeEach
     public void setup(){
@@ -57,7 +52,7 @@ public class MultiplicationResultAttemptControllerTest {
         //given
         User user = new User("John");
         Multiplication multiplication = new Multiplication(10, 20);
-        MultiplicationResultAttempt multiplicationResultAttempt = new MultiplicationResultAttempt(user, multiplication, 200);
+        MultiplicationResultAttempt multiplicationResultAttempt = new MultiplicationResultAttempt(user, multiplication, 200, correct);
         given(multiplicationService.checkAttempt(any(MultiplicationResultAttempt.class))).willReturn(correct);
 
         //when
@@ -65,6 +60,6 @@ public class MultiplicationResultAttemptControllerTest {
 
         //then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.getContentAsString()).isEqualTo(jsonResultResponse.write(new ResultResponse(correct)).getJson());
+        assertThat(response.getContentAsString()).isEqualTo(jsonMultiplicationResultAttempt.write(multiplicationResultAttempt).getJson());
     }
 }
