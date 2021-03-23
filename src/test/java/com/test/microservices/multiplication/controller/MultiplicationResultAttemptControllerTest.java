@@ -17,9 +17,13 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @WebMvcTest(MultiplicationResultAttemptController.class)
@@ -32,6 +36,7 @@ public class MultiplicationResultAttemptControllerTest {
     private MockMvc mvc;
 
     private JacksonTester<MultiplicationResultAttempt> jsonMultiplicationResultAttempt;
+    private JacksonTester<List<MultiplicationResultAttempt>> jsonMultiplicationResultAttemptList;
 
     @BeforeEach
     public void setup(){
@@ -61,5 +66,23 @@ public class MultiplicationResultAttemptControllerTest {
         //then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(jsonMultiplicationResultAttempt.write(multiplicationResultAttempt).getJson());
+    }
+
+    @Test
+    public void retrieveStatsForUserTest() throws Exception {
+        //given
+        User user = new User("john");
+        Multiplication multiplication = new Multiplication(10, 12);
+        MultiplicationResultAttempt multiplicationResultAttempt = new MultiplicationResultAttempt(user, multiplication, 120, true);
+        List<MultiplicationResultAttempt> multiplicationResultAttemptList = List.of(multiplicationResultAttempt);
+        given(multiplicationService.getStatsForUser("john")).willReturn(multiplicationResultAttemptList);
+
+        //when
+        MockHttpServletResponse response = mvc.perform(get("/results").param("alias", "john")).andReturn().getResponse();
+
+        //then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(jsonMultiplicationResultAttemptList.write(multiplicationResultAttemptList).getJson());
+        verify(multiplicationService).getStatsForUser("john");
     }
 }

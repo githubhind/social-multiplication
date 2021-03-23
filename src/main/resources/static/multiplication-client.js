@@ -12,6 +12,24 @@ $('.multiplication-a').empty().append(data.factorA);
 $('.multiplication-b').empty().append(data.factorB);
 });
 }
+
+function updateStats(alias) {
+$.ajax({
+url: "http://localhost:8080/results?alias=" + alias,
+}).then(function(data) {
+$('#stats-body').empty();
+data.forEach(function(row) {
+$('#stats-body').append('<tr><td>' + row.id +
+'</td>' +
+'<td>' + row.multiplication.factorA + ' x ' +
+row.multiplication.factorB + '</td>' +
+'<td>' + row.resultAttempt + '</td>' +
+'<td>' + (row.correct === true ? 'YES' : 'NO')
++ '</td></tr>');
+});
+});
+}
+
 $(document).ready(function() {
 updateMultiplication();
 $("#attempt-form").submit(function( event ) {
@@ -44,5 +62,6 @@ $('.result-message').empty().append("Oops that's not correct! But keep trying!")
 }
 });
 updateMultiplication();
+updateStats(userAlias);
 });
 });

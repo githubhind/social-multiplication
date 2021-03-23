@@ -11,6 +11,7 @@ import org.mockito.BDDMockito;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -72,7 +73,7 @@ public class MultiplicationServiceImplTest {
         User user = new User("john_doe");
         Multiplication multiplication = new Multiplication(50, 60);
         MultiplicationResultAttempt multiplicationResultAttempt = new MultiplicationResultAttempt(user, multiplication, 3010, false);
-        BDDMockito.given(userRepository.findByAlias("john_doe")).willReturn(Optional.empty());
+        given(userRepository.findByAlias("john_doe")).willReturn(Optional.empty());
 
         //when
         boolean result = multiplicationServiceImpl.checkAttempt(multiplicationResultAttempt);
@@ -80,5 +81,22 @@ public class MultiplicationServiceImplTest {
         //then
         assertThat(result).isFalse();
         BDDMockito.verify(multiplicationResultAttemptRepository).save(multiplicationResultAttempt);
+    }
+
+    @Test
+    public void retrieveStatsTest(){
+        //given
+        User user = new User("john");
+        Multiplication multiplication = new Multiplication(10, 11);
+        MultiplicationResultAttempt attempt = new MultiplicationResultAttempt(user, multiplication, 110, true);
+        given(multiplicationResultAttemptRepository.findTop5ByUserAliasOrderByIdDesc("john")).willReturn(List.of(attempt));
+
+        //when
+        List<MultiplicationResultAttempt> lastAttemptsForUser = multiplicationServiceImpl.getStatsForUser("john");
+
+        //then
+        assertThat(lastAttemptsForUser).isNotEmpty();
+        assertThat(lastAttemptsForUser).containsOnly(attempt);
+        verify(multiplicationResultAttemptRepository).findTop5ByUserAliasOrderByIdDesc("john");
     }
 }

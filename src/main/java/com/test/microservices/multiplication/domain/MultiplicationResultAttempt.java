@@ -29,4 +29,10 @@ public final class MultiplicationResultAttempt {
     private final int resultAttempt;
     private final boolean correct;
 
+    public MultiplicationResultAttempt() {
+        this.user = null;
+        this.multiplication = null;
+        this.resultAttempt = -1;
+        this.correct = false;
+    }
 }
