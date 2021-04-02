@@ -3,6 +3,8 @@ package com.test.microservices.multiplication.service;
 import com.test.microservices.multiplication.domain.Multiplication;
 import com.test.microservices.multiplication.domain.MultiplicationResultAttempt;
 import com.test.microservices.multiplication.domain.User;
+import com.test.microservices.multiplication.event.EventDispatcher;
+import com.test.microservices.multiplication.event.MultiplicationSolvedEvent;
 import com.test.microservices.multiplication.repository.MultiplicationResultAttemptRepository;
 import com.test.microservices.multiplication.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +20,14 @@ public class MultiplicationServiceImpl implements MultiplicationService {
     private RandomGeneratorService randomGeneratorService;
     private UserRepository userRepository;
     private MultiplicationResultAttemptRepository multiplicationResultAttemptRepository;
+    private EventDispatcher eventDispatcher;
 
     @Autowired
-    public MultiplicationServiceImpl(RandomGeneratorService randomGeneratorService, UserRepository userRepository, MultiplicationResultAttemptRepository multiplicationResultAttemptRepository) {
+    public MultiplicationServiceImpl(RandomGeneratorService randomGeneratorService, UserRepository userRepository, MultiplicationResultAttemptRepository multiplicationResultAttemptRepository, EventDispatcher eventDispatcher) {
         this.randomGeneratorService = randomGeneratorService;
         this.userRepository = userRepository;
         this.multiplicationResultAttemptRepository = multiplicationResultAttemptRepository;
+        this.eventDispatcher = eventDispatcher;
     }
 
     @Override
@@ -47,6 +51,9 @@ public class MultiplicationServiceImpl implements MultiplicationService {
                 verification
         );
         multiplicationResultAttemptRepository.save(multiplicationResultAttemptVerified);
+        MultiplicationSolvedEvent multiplicationSolvedEvent = new MultiplicationSolvedEvent(multiplicationResultAttemptVerified.getId(),
+                multiplicationResultAttempt.getUser().getId(), multiplicationResultAttemptVerified.isCorrect());
+        eventDispatcher.send(multiplicationSolvedEvent);
         return verification;
     }
 

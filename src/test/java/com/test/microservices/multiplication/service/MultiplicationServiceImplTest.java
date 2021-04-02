@@ -3,6 +3,8 @@ package com.test.microservices.multiplication.service;
 import com.test.microservices.multiplication.domain.Multiplication;
 import com.test.microservices.multiplication.domain.MultiplicationResultAttempt;
 import com.test.microservices.multiplication.domain.User;
+import com.test.microservices.multiplication.event.EventDispatcher;
+import com.test.microservices.multiplication.event.MultiplicationSolvedEvent;
 import com.test.microservices.multiplication.repository.MultiplicationResultAttemptRepository;
 import com.test.microservices.multiplication.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,12 +31,15 @@ public class MultiplicationServiceImplTest {
     @Mock
     private MultiplicationResultAttemptRepository multiplicationResultAttemptRepository;
 
+    @Mock
+    private EventDispatcher eventDispatcher;
+
     private MultiplicationServiceImpl multiplicationServiceImpl;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        multiplicationServiceImpl = new MultiplicationServiceImpl(randomGeneratorService, userRepository, multiplicationResultAttemptRepository);
+        multiplicationServiceImpl = new MultiplicationServiceImpl(randomGeneratorService, userRepository, multiplicationResultAttemptRepository, eventDispatcher);
     }
 
     @Test
@@ -65,6 +70,7 @@ public class MultiplicationServiceImplTest {
         //then
         assertThat(result).isTrue();
         verify(multiplicationResultAttemptRepository).save(multiplicationResultAttemptVerified);
+        verify(eventDispatcher).send(BDDMockito.any(MultiplicationSolvedEvent.class));
     }
 
     @Test
@@ -81,6 +87,7 @@ public class MultiplicationServiceImplTest {
         //then
         assertThat(result).isFalse();
         BDDMockito.verify(multiplicationResultAttemptRepository).save(multiplicationResultAttempt);
+        verify(eventDispatcher).send(BDDMockito.any(MultiplicationSolvedEvent.class));
     }
 
     @Test
